@@ -49,6 +49,26 @@ Minus就像流行的静态站点生成器jekyll, hugo那样, 使用markdown语�
 
 ## todo
 
-1. google SEO优化
-2. markdown解析器优化
-3. rss订阅
+- google SEO优化
+- markdown解析器优化
+- rss订阅
+
+markdown语法
+
+- headers
+- Ordered and unordered Lists
+- Line Breaks
+- horizontal Rules
+- quotes
+- nested quotes
+- code
+- Images
+- link
+- strong
+- em
+- strong+em
+- Strikethrough
+
+- embased lists
+- URLs and Email Addresses
+

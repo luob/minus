@@ -1,4 +1,4 @@
-package main
+package markdown
 
 type block struct {
 	tag       string

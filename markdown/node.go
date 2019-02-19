@@ -1,22 +1,10 @@
 package main
 
-
-type tree struct {
-
-}
-
-type node struct {
-	syntax       string
-	attr      map[string][]string
-	value     string
-	children  []*node
-}
-
 type block struct {
-	node
+	tag       string
+	text      string
+	children  []*block
 }
-
-type
 
 const (
 	tagArticle    = "article"
@@ -40,13 +28,13 @@ const (
 	tagCode       = "Code"
 )
 
-func newRoot() *node {
+func newBlock() *node {
 	return &node{
 		tag: tagArticle,
 	}
 }
 
-func newNode(raw string) *node{
+func newBlock(raw string) *node{
 	node:= &node{}
 	node.parse(text)
 	return node

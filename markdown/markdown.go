@@ -1,10 +1,10 @@
-package main
+package markdown
 
 import "strings"
 
 type defaultRenderer struct{}
 
-func newRenderer() *defaultRenderer {
+func newRenderer() *Renderer {
 	return &defaultRenderer{}
 }
 

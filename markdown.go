@@ -13,61 +13,65 @@ type rule struct {
 
 type replaceFunc func(string) string
 
-var (
-	h6 = newRule(`^###### .*`, trimPrefix("###### "), withTag("h6"))
-	h5 = newRule(`^##### .*`, trimPrefix("##### "), withTag("h5"))
-	h4 = newRule(`^#### .*`, trimPrefix("####  "), withTag("h4"))
-	h3 = newRule(`^### .*`, trimPrefix("### "), withTag("h3"))
-	h2 = newRule(`^## .*`, trimPrefix("## "), withTag("h2"))
-	h1 = newRule(`^# .*`, trimPrefix("# "), withTag("h1"))
-
-	strongEm = newRule(`\*\*\*.*\*\*\*`, trim("*"), withTag("em", "strong"))
-	strong   = newRule(`\*\*.*\*\*`, trim("*"), withTag("strong"))
-	em       = newRule(`\*.*\*`, trim("*"), withTag("em"))
-
-	strongEm2 = newRule(`\_\_\_.*\_\_\_`, trim("_"), withTag("em", "strong"))
-	strong2   = newRule(`\_\_.*\_\_`, trim("_"), withTag("strong"))
-	em2       = newRule(`\_.*\_`, trim("_"), withTag("em"))
-
-	ul        = newRuleGreedy(`^- .*\n`)
-	ullist    = newRule(`- `, trimPrefix("_ "), withTag("li"))
-	ollistPre = newRule(`^[0-9]*. `)
-)
-
-const (
-	greedyMode = iota
-	nonGreedymode
-)
-
 func newRule(regStr string, replaceFuncs ...replaceFunc) *rule {
-	return initRule(regStr, false, replaceFuncs...)
-}
-
-func newRuleGreedy(regStr string, replaceFuncs ...replaceFunc) *rule {
-	return initRule(regStr, true, replaceFuncs...)
-}
-
-func initRule(regStr string, isGreedy bool, replaceFuncs ...replaceFunc) *rule {
 	r := regexp.MustCompile(regStr)
-	if isGreedy {
-		r.Longest()
-	}
 	f := chainsAll(replaceFuncs...)
 	return &rule{r, f}
 }
 
-func markdownToHTML(input string) string {
+var rules = []*rule{
 
-	return chains(
-		replaceByRules(strongEm),
-		replaceByRules(strong),
-	)(input)
+	// headings
+	newRule(`^###### .*`, trimPrefix("###### "), withTag("h6")),
+	newRule(`^##### .*`, trimPrefix("##### "), withTag("h5")),
+	newRule(`^#### .*`, trimPrefix("####  "), withTag("h4")),
+	newRule(`^### .*`, trimPrefix("### "), withTag("h3")),
+	newRule(`^## .*`, trimPrefix("## "), withTag("h2")),
+	newRule(`^# .*`, trimPrefix("# "), withTag("h1")),
+
+	// inline tags
+	newRule(`\*\*\*.*\*\*\*`, trim("*"), withTag("em", "strong")),
+	newRule(`\*\*.*\*\*`, trim("*"), withTag("strong")),
+	newRule(`\*.*\*`, trim("*"), withTag("em")),
+
+	// inline tags type 2
+	newRule(`\_\_\_.*\_\_\_`, trim("_"), withTag("em", "strong")),
+	newRule(`\_\_.*\_\_`, trim("_"), withTag("strong")),
+	newRule(`\_.*\_`, trim("_"), withTag("em")),
+
+	// list
+	newRule(`^- `, each(trimPrefix("- "), withTag("li")), withTag("ol")),
+	newRule(`^[0-9]+. `, each(trim("0123456789. "), withTag("li")), withTag("ul")),
+
+	// code blocks
+	newRule(`^`+"```", trim("`"), asCode()),
+
+	// html
+	newRule(`^<.*>`, pass()),
+
+	// paragragh
+	newRule(`.*`, withTag("p")),
 }
 
-func replaceByRules(rule *rule) replaceFunc {
-	return func(input string) string {
-		return rule.reg.ReplaceAllStringFunc(input, rule.replaceFunc)
+var (
+	splitRegexp = regexp.MustCompile(`\n{2,}`)
+	langRegexp  = regexp.MustCompile(`\b.*\b`)
+)
+
+func markdownToHTML(input string) (output string) {
+	for _, block := range splitRegexp.Split(input, -1) {
+		output += parseBlock(block)
 	}
+	return
+}
+
+func parseBlock(input string) string {
+	for _, rule := range rules {
+		if rule.reg.MatchString(input) {
+			return rule.replaceFunc(input)
+		}
+	}
+	return input
 }
 
 func chainsAll(replaceFuncs ...replaceFunc) replaceFunc {
@@ -81,6 +85,12 @@ func chainsAll(replaceFuncs ...replaceFunc) replaceFunc {
 func chains(f1, f2 replaceFunc) replaceFunc {
 	return func(input string) string {
 		return f2(f1(input))
+	}
+}
+
+func pass() replaceFunc {
+	return func(string) string {
+		return ""
 	}
 }
 
@@ -108,5 +118,27 @@ func withTag(tags ...string) replaceFunc {
 			input = fmt.Sprintf("<%s>%s</%s>", tag, input, tag)
 		}
 		return input
+	}
+}
+
+func asCode() func(string) string {
+	return func(input string) string {
+		// lang := langRegexp.FindString(input)
+		arr := strings.Split(input, "\n")
+		lang := arr[0]
+		input = strings.Join(arr[1:], "\n")
+		return fmt.Sprintf("<pre><code class=\"%s\">%s</code></pre>", lang, input)
+	}
+}
+
+func each(replaceFuncs ...replaceFunc) replaceFunc {
+	return func(input string) string {
+		output := ""
+		f := chainsAll(replaceFuncs...)
+		lines := strings.Split(input, "\n")
+		for _, line := range lines {
+			output += f(line)
+		}
+		return output
 	}
 }

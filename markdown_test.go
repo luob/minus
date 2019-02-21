@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"io/ioutil"
+	"log"
+	"testing"
+)
 
 func Test_markdownToHTML(t *testing.T) {
 	type args struct {
@@ -16,7 +20,7 @@ func Test_markdownToHTML(t *testing.T) {
 			args: args{
 				input: "***dsadasdad***",
 			},
-			want: "<strong><em>***dsadasdad***</em></strong>",
+			want: "<strong><em>dsadasdad</em></strong>",
 		},
 	}
 	for _, tt := range tests {
@@ -26,4 +30,26 @@ func Test_markdownToHTML(t *testing.T) {
 			}
 		})
 	}
+}
+
+func BenchmarkMarkdownToHTML(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		file, err := ioutil.ReadFile("posts/post1.md")
+		if err != nil {
+			log.Fatal(err)
+		}
+		markdownToHTML(string(file[:]))
+	}
+}
+
+func BenchmarkMarkdownToHTML2(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			file, err := ioutil.ReadFile("posts/post1.md")
+			if err != nil {
+				log.Fatal(err)
+			}
+			markdownToHTML(string(file[:]))
+		}
+	})
 }

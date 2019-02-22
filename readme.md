@@ -26,49 +26,70 @@ Minus is like the popular static site generator jekyll, hugo. You write posts in
 - front-matters
 - image resize or compress
 
+## Install
 
-------
 
-## 什么是Minus
+Install binary
+```
+// todo
+```
 
-Minus就像流行的静态站点生成器jekyll, hugo那样, 使用markdown语法写文章, Minus用这些文章渲染成一个HTML站点. Minus的含义是做减法, 减去一切不需要的功能, 减去所有第三方依赖. 所有代码都是Go写的，只使用了Go的标准库, 实现了一个简单的markdown解析器, 但是有些功能比如图像调整大小看起来很难实现。
+Install from source
 
-### 功能
+```shell
+git clone https://github.com/luob/minus
+cd minus
+go install
+```
 
-- 快速安装, 快速生成
-- 无需了解更多框架的用法（~~真的没有了~~）
-- traditonal markdown支持
-- 行内代码和代码块支持
-- 使用Go的html/template语法自定义模板
+## Usage
 
-### 不支持
+make a directory like this
 
-- 任何更多扩展语法
-- FrontMatter写法
-- 图像调整大小和压缩
+```shell
+├── config.json
+├── posts
+│   ├── post1.md
+│   └── post2.md
+└── template
+    ├── footer.html
+    ├── header.html
+    ├── index.html
+    ├── post.html
+    └── tag.html
+```
+
+then run minus
+
+``` shell
+minus
+
+// or
+minus <path-to-your-directory>
+```
+
+Minus will generate the site in the `/public` directory, then you can deploy it to the server.
+
+## Auto Deploy
+
+You can use travis, circleci or netlify to automate this deployment without installing minus. This is a travis configuration file example:
+
+```yaml
+
+```
+
+## Contributing
+
+Welcome to modify some small bugs by pull request. For major changes,
+There are two rules to follow:
 
 ## todo
 
-- google SEO优化
-- markdown解析器优化
-- rss订阅
+1. 二进制发布
+1. 通过目录实现文章分类功能
+2. 自定义页面功能
+3. 多模板支持
+4. 重构markdown模块以外的部分
+4. 重写markdown解释器, 一次遍历解析成ast, 时间复杂度降到O(n)
 
-markdown语法
-
-- headers
-- Ordered and unordered Lists
-- Line Breaks
-- horizontal Rules
-- quotes
-- nested quotes
-- code
-- Images
-- link
-- strong
-- em
-- strong+em
-- Strikethrough
-
-- embased lists
-- URLs and Email Addresses
 

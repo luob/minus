@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/luob/minus)](https://goreportcard.com/report/github.com/luob/minus)
 [![Code Size](https://img.shields.io/github/languages/code-size/luob/minus.svg)]()
 [![Lisense](https://img.shields.io/github/license/luob/minus.svg)](LICENSE)
-<!-- [![Build Status](https://travis-ci.com/luob/minus.svg?branch=master)](https://travis-ci.com/luob/minus) -->
+[![Build Status](https://travis-ci.com/luob/minus.svg?branch=master)](https://travis-ci.com/luob/minus)
 
 An absolutely lightweight static site generator without any third-party dependency written in Go.
 

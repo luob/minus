@@ -83,13 +83,18 @@ You can use travis, circleci or netlify to automate this deployment without inst
 Welcome to modify some small bugs by pull request. For major changes,
 There are two rules to follow:
 
-## todo
+## Roadmap
 
-1. 二进制发布
-1. 通过目录实现文章分类功能
-2. 自定义页面功能
-3. 多模板支持
-4. 重构markdown模块以外的部分
-4. 重写markdown解释器, 一次遍历解析成ast, 时间复杂度降到O(n)
+### v0.1.0
+
+- custom pages rendering
+- release a binary package
+
+### v1.0.0
+- Implement article classification through directory structure
+- small-scale refactoring: bug sweeping, change some design mode of the markdown package
+
+### v2.0.0
+- Rewrite a O(n) markdown parser, once traversed into ast.
 
 

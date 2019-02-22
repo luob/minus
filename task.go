@@ -23,6 +23,8 @@ type userConfig struct {
 	// TemplateDir string `json:`
 }
 
+type
+
 type indexInfo struct {
 	filename       string
 	targetFileName string
@@ -57,6 +59,10 @@ func newTask(workDir string, devMode bool, port int) *Task {
 
 	// load user config
 	userConfigFile, err := ioutil.ReadFile(userConfigFileName)
+	if err != nil {
+		log.Println("config.json not found")
+		log.Println(err)
+	}
 	userConfig := &userConfig{}
 	err = json.Unmarshal(userConfigFile, userConfig)
 	if err != nil {

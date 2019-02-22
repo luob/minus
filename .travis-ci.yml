@@ -1,0 +1,10 @@
+branches:
+  only:
+  - master
+
+language: go
+
+install: true
+
+script:
+  - go test -v ./...

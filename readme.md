@@ -87,12 +87,16 @@ There are two rules to follow:
 
 ### v0.1.0
 
+- finish all standard markdown syntax parse
+- add test case
 - custom pages rendering
 - release a binary package
 
 ### v1.0.0
+
 - Implement article classification through directory structure
-- small-scale refactoring: bug sweeping, change some design mode of the markdown package
+- small-scale refactoring: bug sweeping, change some design mode of the markdown package, support embased list
+- add more test case
 
 ### v2.0.0
 - Rewrite a O(n) markdown parser, once traversed into ast.

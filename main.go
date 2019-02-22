@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"runtime"
 )
 
 func main() {
@@ -21,5 +22,7 @@ func main() {
 		wd = path.Join(wd, flag.Args()[0])
 	}
 
-	newTask(wd, *devMode, *port).Run()
+	CPUnum := runtime.NumCPU()
+
+	run(wd, CPUnum, *devMode, *port)
 }

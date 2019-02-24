@@ -1,14 +1,12 @@
 package main
 
 import (
-	"errors"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 )
@@ -101,25 +99,11 @@ func loadArticles(currentDir string, categories []string) []*article {
 }
 
 func (g *generator) generateArticles() {
+	// for _, article := range g.articles {
 
+	// }
 }
 
 func (g *generator) generateIndex() {
 
-}
-
-var dateReg = regexp.MustCompile(`^\d{4}-\d{1,2}-\d{1,2}`)
-
-func extractArticle(fileName string) (string, *time.Time, error) {
-	dateString := dateReg.FindString(fileName)
-	if dateString == "" {
-		return "", nil, errors.New("irregular file name ")
-	}
-	date, err := time.Parse("2006-02-01", dateString)
-	if err != nil {
-		return "", nil, errors.New("irregular file name")
-	}
-	title := strings.TrimPrefix(fileName, dateString+"-")
-	title = strings.TrimSuffix(title, ".md")
-	return title, &date, nil
 }

@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
-	"strings"
 )
 
 // PageData is
@@ -98,28 +96,4 @@ func renderPostPage(fileName, targetFileName string, postInfoList []*PostInfo, t
 	}
 	tpl.Execute(targetFile, data)
 	defer targetFile.Close()
-}
-
-func extractPostInfo(fileName string) (title, date string) {
-	dateReg := regexp.MustCompile(`^\d{4}-\d{1,2}-\d{1,2}`)
-	date = dateReg.FindString(fileName)
-	title = strings.TrimPrefix(fileName, date+"-")
-	title = strings.TrimSuffix(title, ".md")
-	return
-}
-
-func refreshTargetDir(dirName string) {
-	err := os.RemoveAll(dirName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	os.Mkdir(dirName, os.ModePerm)
-}
-
-func mustParseTemplate(tplFileNames ...string) *template.Template {
-	tpl, err := template.ParseFiles(tplFileNames...)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return tpl
 }

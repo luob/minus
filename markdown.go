@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"regexp"
 	"strings"
 )
@@ -58,11 +59,12 @@ var (
 	langRegexp  = regexp.MustCompile(`\b.*\b`)
 )
 
-func markdownToHTML(input string) (output string) {
+func markdownToHTML(input string) template.HTML {
+	s := ""
 	for _, block := range splitRegexp.Split(input, -1) {
-		output += parseBlock(block)
+		s += parseBlock(block)
 	}
-	return
+	return template.HTML(s)
 }
 
 func parseBlock(input string) string {

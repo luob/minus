@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -13,14 +12,9 @@ import (
 
 // PageData is
 type PageData struct {
-	UserConfig   *UserConfig
 	PostInfoList []*PostInfo
-	Content      string
-}
-
-// UserConfig is
-type UserConfig struct {
-	Author string
+	ContentFrom  string
+	Content      template.HTML
 }
 
 // PostInfo is
@@ -34,50 +28,26 @@ type PostInfo struct {
 
 func run(workDir string, limit int, devMode bool, port int) {
 	// join path
-	userConfigFileName := path.Join(workDir, "config.json")
 	indexTplFileName := path.Join(workDir, "template", "index.html")
 	postTplFileName := path.Join(workDir, "template", "post.html")
 	postDirName := path.Join(workDir, "posts")
 	targetDirName := path.Join(workDir, "public")
 	targetIndexFileName := path.Join(targetDirName, "index.html")
 
-	err := os.RemoveAll(targetDirName)
-	if err != nil {
-		log.Println(err)
-	}
-	os.Mkdir(targetDirName, os.ModePerm)
+	refreshTargetDir(targetDirName)
 
 	// load template
-	indexTpl, err := template.ParseFiles(indexTplFileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	postTpl, err := template.ParseFiles(postTplFileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// load user config
-	userConfigFile, err := ioutil.ReadFile(userConfigFileName)
-	if err != nil {
-		log.Println(err)
-	}
-	userConfig := &UserConfig{}
-	err = json.Unmarshal(userConfigFile, userConfig)
-	if err != nil {
-		log.Println(err)
-	}
+	indexTpl := mustParseTemplate(indexTplFileName)
+	postTpl := mustParseTemplate(postTplFileName)
 
 	// get postList
 	postFileInfos, err := ioutil.ReadDir(postDirName)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 	postInfoList := []*PostInfo{}
 	for _, postFileInfo := range postFileInfos {
-		title, date := extractFromFileName(postFileInfo.Name())
-		log.Println(title)
-		log.Println(date)
+		title, date := extractPostInfo(postFileInfo.Name())
 		if title == "" {
 			continue
 		}
@@ -88,29 +58,28 @@ func run(workDir string, limit int, devMode bool, port int) {
 			Date:           date,
 		})
 	}
-	log.Println(postInfoList)
 
-	renderIndexPage(targetIndexFileName, userConfig, postInfoList, indexTpl)
+	// render
+
+	renderIndexPage(targetIndexFileName, postInfoList, indexTpl)
 	for _, postInfo := range postInfoList {
-		renderPostPage(postInfo.filename, postInfo.targetFileName, userConfig, postInfoList, postTpl)
+		renderPostPage(postInfo.filename, postInfo.targetFileName, postInfoList, postTpl)
 	}
 }
 
-func renderIndexPage(targetIndexFileName string, userConfig *UserConfig, postInfoList []*PostInfo, tpl *template.Template) {
+func renderIndexPage(targetIndexFileName string, postInfoList []*PostInfo, tpl *template.Template) {
 	targetFile, err := os.Create(targetIndexFileName)
 	if err != nil {
 		panic(err)
 	}
 	data := &PageData{
-		UserConfig:   userConfig,
 		PostInfoList: postInfoList,
-		Content:      "",
 	}
 	tpl.Execute(targetFile, data)
 	defer targetFile.Close()
 }
 
-func renderPostPage(fileName, targetFileName string, userConfig *UserConfig, postInfoList []*PostInfo, tpl *template.Template) {
+func renderPostPage(fileName, targetFileName string, postInfoList []*PostInfo, tpl *template.Template) {
 
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
@@ -125,7 +94,6 @@ func renderPostPage(fileName, targetFileName string, userConfig *UserConfig, pos
 	}
 
 	data := &PageData{
-		UserConfig:   userConfig,
 		PostInfoList: postInfoList,
 		Content:      content,
 	}
@@ -133,10 +101,26 @@ func renderPostPage(fileName, targetFileName string, userConfig *UserConfig, pos
 	defer targetFile.Close()
 }
 
-func extractFromFileName(fileName string) (title, date string) {
+func extractPostInfo(fileName string) (title, date string) {
 	dateReg := regexp.MustCompile(`^\d{4}-\d{1,2}-\d{1,2}`)
 	date = dateReg.FindString(fileName)
 	title = strings.TrimPrefix(fileName, date+"-")
 	title = strings.TrimSuffix(title, ".md")
 	return
+}
+
+func refreshTargetDir(dirName string) {
+	err := os.RemoveAll(dirName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	os.Mkdir(dirName, os.ModePerm)
+}
+
+func mustParseTemplate(tplFileNames ...string) *template.Template {
+	tpl, err := template.ParseFiles(tplFileNames...)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return tpl
 }

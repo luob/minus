@@ -18,56 +18,26 @@ type generator struct {
 }
 
 type articleInfo struct {
-	title    string
-	date     string
-	category string
+	title      string
+	date       string
+	categories []string
 }
 
 func newGenerator(workDir string) *generator {
 	return &generator{
-		workDir:   workDir,
-		targetDir: path.Join(workDir, "target"),
+		workDir:         workDir,
+		targetDir:       path.Join(workDir, "target"),
+		tpls:            loadTemplates(workDir),
+		ArticleInfoList: loadArticles(workDir, "article"),
 	}
 }
 
 func (g *generator) generate() {
 	g.prepareTargetDir()
 	g.loadTemplates()
+	g.loadArticles()
 	g.generateArticles()
 	g.generateIndex()
-}
-
-func (g *generator) generateArticles() {
-	// readCategoriesInfo
-	fileInfos, err := ioutil.ReadDir(g.workDir)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, fileInfos := range fileInfos {
-		// if fileInfo
-	}
-}
-
-func (g *generator) generateIndex() {
-
-}
-
-func (g *generator) loadTemplates() {
-	fileInfos, err := ioutil.ReadDir(g.workDir)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, fileInfo := range fileInfos {
-		name := fileInfo.Name()
-		ext := filepath.Ext(name)
-		tplName := strings.TrimSuffix(name, ext)
-		tplFileName := path.Join(g.workDir, name)
-		tpl, err := template.ParseFiles(tplFileName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		g.tpls[tplName] = tpl
-	}
 }
 
 func (g *generator) prepareTargetDir() {
@@ -79,4 +49,41 @@ func (g *generator) prepareTargetDir() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func loadTemplates(workDir) map[string]*template.Template {
+	fileInfos, err := ioutil.ReadDir(g.workDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tpls := make(map[string]*template.Template)
+	for _, fileInfo := range fileInfos {
+		name := fileInfo.Name()
+		ext := filepath.Ext(name)
+		tplName := strings.TrimSuffix(name, ext)
+		tplFileName := path.Join(g.workDir, name)
+		tpl, err := template.ParseFiles(tplFileName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		tpls[tplName] = tpl
+	}
+	return tpls
+}
+
+func loadArticles(currentDir string, categories []string) {
+	// readCategoriesInfo
+	fileInfos, err := ioutil.ReadDir(currentDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, fileInfo := range fileInfos {
+		if fileInfo.IsDir() {
+
+		}
+	}
+}
+
+func (g *generator) generateIndex() {
+
 }

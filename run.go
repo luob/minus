@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"regexp"
 	"strings"
 )
@@ -26,46 +25,46 @@ type PostInfo struct {
 	targetFileName string
 }
 
-func run(workDir string, limit int, devMode bool, port int) {
-	// join path
-	indexTplFileName := path.Join(workDir, "template", "index.html")
-	postTplFileName := path.Join(workDir, "template", "post.html")
-	postDirName := path.Join(workDir, "posts")
-	targetDirName := path.Join(workDir, "public")
-	targetIndexFileName := path.Join(targetDirName, "index.html")
+// func run(workDir string, limit int, devMode bool, port int) {
+// 	// join path
+// 	indexTplFileName := path.Join(workDir, "template", "index.html")
+// 	postTplFileName := path.Join(workDir, "template", "post.html")
+// 	postDirName := path.Join(workDir, "posts")
+// 	targetDirName := path.Join(workDir, "public")
+// 	targetIndexFileName := path.Join(targetDirName, "index.html")
 
-	refreshTargetDir(targetDirName)
+// 	refreshTargetDir(targetDirName)
 
-	// load template
-	indexTpl := mustParseTemplate(indexTplFileName)
-	postTpl := mustParseTemplate(postTplFileName)
+// 	// load template
+// 	indexTpl := mustParseTemplate(indexTplFileName)
+// 	postTpl := mustParseTemplate(postTplFileName)
 
-	// get postList
-	postFileInfos, err := ioutil.ReadDir(postDirName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	postInfoList := []*PostInfo{}
-	for _, postFileInfo := range postFileInfos {
-		title, date := extractPostInfo(postFileInfo.Name())
-		if title == "" {
-			continue
-		}
-		postInfoList = append(postInfoList, &PostInfo{
-			filename:       path.Join(postDirName, postFileInfo.Name()),
-			targetFileName: path.Join(targetDirName, title+".html"),
-			Title:          title,
-			Date:           date,
-		})
-	}
+// 	// get postList
+// 	postFileInfos, err := ioutil.ReadDir(postDirName)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	postInfoList := []*PostInfo{}
+// 	for _, postFileInfo := range postFileInfos {
+// 		title, date := extractPostInfo(postFileInfo.Name())
+// 		if title == "" {
+// 			continue
+// 		}
+// 		postInfoList = append(postInfoList, &PostInfo{
+// 			filename:       path.Join(postDirName, postFileInfo.Name()),
+// 			targetFileName: path.Join(targetDirName, title+".html"),
+// 			Title:          title,
+// 			Date:           date,
+// 		})
+// 	}
 
-	// render
+// 	// render
 
-	renderIndexPage(targetIndexFileName, postInfoList, indexTpl)
-	for _, postInfo := range postInfoList {
-		renderPostPage(postInfo.filename, postInfo.targetFileName, postInfoList, postTpl)
-	}
-}
+// 	renderIndexPage(targetIndexFileName, postInfoList, indexTpl)
+// 	for _, postInfo := range postInfoList {
+// 		renderPostPage(postInfo.filename, postInfo.targetFileName, postInfoList, postTpl)
+// 	}
+// }
 
 func renderIndexPage(targetIndexFileName string, postInfoList []*PostInfo, tpl *template.Template) {
 	targetFile, err := os.Create(targetIndexFileName)

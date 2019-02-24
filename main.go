@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"os"
 	"path"
@@ -10,19 +9,21 @@ import (
 
 func main() {
 
-	devMode := flag.Bool("serve", false, "serve site")
-	port := flag.Int("port", 10066, "serve site at port")
-	flag.Parse()
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	wd, err := os.Getwd()
+	// get work dir
+	workDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
-	if flag.NArg() > 0 {
-		wd = path.Join(wd, flag.Args()[0])
+	if len(os.Args) > 1 {
+		arg := os.Args[1]
+		if path.IsAbs(arg) {
+			workDir = arg
+		} else {
+			workDir = path.Join(workDir, arg)
+		}
 	}
 
-	CPUnum := runtime.NumCPU()
-
-	run(wd, CPUnum, *devMode, *port)
+	newGenerator(workDir).generate()
 }

@@ -1,48 +1,56 @@
 package main
 
 import (
-	"html/template"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
-type generator struct {
+// Generator is
+type Generator struct {
 	workDir   string
 	targetDir string
-	tpls      map[string]*template.Template
-	articles  []*article
+	tpls      tpls
+	articles  []*Article
 }
 
-type article struct {
-	title      string
-	date       *time.Time
-	categories []string
-}
-
-func newGenerator(workDir string) *generator {
+// NewGenerator is
+func NewGenerator(workDir string) *Generator {
 	targetDir := path.Join(workDir, "target")
-	tpls := loadTemplates(workDir)
-	articles := loadArticles(workDir, []string{"article"})
-	return &generator{
+	return &Generator{
 		workDir:   workDir,
 		targetDir: targetDir,
-		tpls:      tpls,
-		articles:  articles,
 	}
 }
 
-func (g *generator) generate() {
+// Generate is
+func (g *Generator) Generate() {
+	g.loadFiles(make([]string, 0))
 	g.prepareTargetDir()
 	g.generateArticles()
 	g.generateIndex()
 }
 
-func (g *generator) prepareTargetDir() {
+func (g *Generator) loadFiles(categories []string) {
+	currentDir := path.Join(g.workDir, path.Join(categories...))
+	fileInfos := getFileInfos(currentDir)
+	for _, fileInfo := range fileInfos {
+		name := fileInfo.Name()
+		if fileInfo.IsDir() {
+			g.loadFiles(append(categories, name))
+		} else if path.Ext(name) == ".md" {
+			article, err := newArticle(name, categories)
+			if err != nil {
+				continue
+			}
+			g.articles = append(g.articles, article)
+		} else if path.Ext(name) == ".html" {
+			g.tpls.add(path.Join(currentDir, name))
+		}
+	}
+}
+
+func (g *Generator) prepareTargetDir() {
 	err := os.RemoveAll(g.targetDir)
 	if err != nil {
 		log.Fatal(err)
@@ -53,57 +61,12 @@ func (g *generator) prepareTargetDir() {
 	}
 }
 
-func loadTemplates(templateDir string) map[string]*template.Template {
-	fileInfos, err := ioutil.ReadDir(templateDir)
-	if err != nil {
-		log.Fatal(err)
-	}
-	tpls := make(map[string]*template.Template)
-	for _, fileInfo := range fileInfos {
-		name := fileInfo.Name()
-		ext := filepath.Ext(name)
-		tplName := strings.TrimSuffix(name, ext)
-		tplFileName := path.Join(templateDir, name)
-		tpl, err := template.ParseFiles(tplFileName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		tpls[tplName] = tpl
-	}
-	return tpls
-}
-
-func loadArticles(currentDir string, categories []string) []*article {
-	articles := make([]*article, 0)
-	fileInfos, err := ioutil.ReadDir(currentDir)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, fileInfo := range fileInfos {
-		name := fileInfo.Name()
-		nameAbs := path.Join(currentDir, name)
-		if fileInfo.IsDir() {
-			articles = append(articles, loadArticles(nameAbs, append(categories, name))...)
-		} else if filepath.Ext(name) == ".md" {
-			title, date, err := extractArticle(name)
-			if err != nil {
-				continue
-			}
-			articles = append(articles, &article{
-				title: title,
-				date:  date,
-			})
-		}
-	}
-	return articles
-}
-
-func (g *generator) generateArticles() {
+func (g *Generator) generateArticles() {
 	// for _, article := range g.articles {
 
 	// }
 }
 
-func (g *generator) generateIndex() {
+func (g *Generator) generateIndex() {
 
 }

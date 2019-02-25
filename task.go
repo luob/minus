@@ -29,7 +29,7 @@ func newArticletask(fileName, targetFileName string, tpl *template.Template) *ta
 		Date  *time.Time
 	}{
 		Title: fileName,
-		Date:  fileName,
+		// Date:  fileName,
 	})
 }
 

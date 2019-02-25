@@ -25,5 +25,5 @@ func main() {
 		}
 	}
 
-	newGenerator(workDir).generate()
+	NewGenerator(workDir).Generate()
 }

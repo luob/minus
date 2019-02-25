@@ -8,6 +8,8 @@
 
 An absolutely lightweight static site generator without any third-party dependency written in Go.
 
+**Sorry everyone, this project has not been finished yet, but welcome to follow the progress.**
+
 ## What is Minus
 
 Minus is like the popular static site generator jekyll, hugo. You write posts in markdown, and Minus render these posts to html. Minus means to do subtraction, Minus all unnecessary functions, Minus all third-party dependencies. All the code is written in go, only use the Go's standard library, Implemented a simple markdown parser, but some functions such as image resize are difficult to implement.

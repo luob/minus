@@ -1,4 +1,4 @@
-package main
+package generator
 
 import (
 	"log"
@@ -22,7 +22,8 @@ func newtask(fileName, targetFileName string, template *template, data interface
 	}
 }
 
-func newArticletask(fileName, targetFileName string, tpl *template) *task {
+func newArticletask(article *Article, tpl *template) *task {
+	// fileName := article.
 	return newtask(fileName, targetFileName, tpl, &struct {
 		Title string
 		Date  *time.Time

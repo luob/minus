@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -10,8 +11,8 @@ import (
 type Generator struct {
 	workDir   string
 	targetDir string
-	tpls      tpls
-	articles  []*Article
+	templates templates
+	articles  articles
 }
 
 // NewGenerator is
@@ -20,6 +21,8 @@ func NewGenerator(workDir string) *Generator {
 	return &Generator{
 		workDir:   workDir,
 		targetDir: targetDir,
+		templates: make(templates),
+		articles:  make(articles),
 	}
 }
 
@@ -34,20 +37,24 @@ func (g *Generator) Generate() {
 func (g *Generator) loadFiles(categories []string) {
 	currentDir := path.Join(g.workDir, path.Join(categories...))
 	fileInfos := getFileInfos(currentDir)
-	for _, fileInfo := range fileInfos {
-		name := fileInfo.Name()
-		if fileInfo.IsDir() {
-			g.loadFiles(append(categories, name))
-		} else if path.Ext(name) == ".md" {
-			article, err := newArticle(name, categories)
-			if err != nil {
-				continue
-			}
-			g.articles = append(g.articles, article)
-		} else if path.Ext(name) == ".html" {
-			g.tpls.add(path.Join(currentDir, name))
+	for _, fi := range fileInfos {
+		fileInfo := newFileInfo(currentDir, fi)
+		if fileInfo.isDir() {
+			g.loadFiles(append(categories, fileInfo.name()))
+		} else if fileInfo.ext() == ".md" {
+			g.articles.add(fileInfo, categories)
+		} else if fileInfo.ext() == ".html" {
+			g.templates.add(fileInfo)
 		}
 	}
+}
+
+func getFileInfos(dirName string) []os.FileInfo {
+	fileInfos, err := ioutil.ReadDir(dirName)
+	if err != nil {
+		log.Println("")
+	}
+	return fileInfos
 }
 
 func (g *Generator) prepareTargetDir() {

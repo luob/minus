@@ -1,17 +1,14 @@
 package main
 
 import (
-	"html/template"
-	"io/ioutil"
-	"log"
-	"os"
+	htmlTemplate "html/template"
 )
 
 // PageData is
 type PageData struct {
 	PostInfoList []*PostInfo
 	ContentFrom  string
-	Content      template.HTML
+	Content      htmlTemplate.HTML
 }
 
 // PostInfo is
@@ -64,36 +61,36 @@ type PostInfo struct {
 // 	}
 // }
 
-func renderIndexPage(targetIndexFileName string, postInfoList []*PostInfo, tpl *template.Template) {
-	targetFile, err := os.Create(targetIndexFileName)
-	if err != nil {
-		panic(err)
-	}
-	data := &PageData{
-		PostInfoList: postInfoList,
-	}
-	tpl.Execute(targetFile, data)
-	defer targetFile.Close()
-}
+// func renderIndexPage(targetIndexFileName string, postInfoList []*PostInfo, tpl *template) {
+// 	targetFile, err := os.Create(targetIndexFileName)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	data := &PageData{
+// 		PostInfoList: postInfoList,
+// 	}
+// 	tpl.Execute(targetFile, data)
+// 	defer targetFile.Close()
+// }
 
-func renderPostPage(fileName, targetFileName string, postInfoList []*PostInfo, tpl *template.Template) {
+// func renderPostPage(fileName, targetFileName string, postInfoList []*PostInfo, tpl *template) {
 
-	file, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		log.Println(err)
-	}
+// 	file, err := ioutil.ReadFile(fileName)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
 
-	content := markdownToHTML(string(file[:]))
+// 	// content := markdownToHTML(string(file[:]))
 
-	targetFile, err := os.Create(targetFileName)
-	if err != nil {
-		log.Println(err)
-	}
+// 	targetFile, err := os.Create(targetFileName)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
 
-	data := &PageData{
-		PostInfoList: postInfoList,
-		Content:      content,
-	}
-	tpl.Execute(targetFile, data)
-	defer targetFile.Close()
-}
+// 	data := &PageData{
+// 		PostInfoList: postInfoList,
+// 		Content:      "content",
+// 	}
+// 	tpl.Execute(targetFile, data)
+// 	defer targetFile.Close()
+// }

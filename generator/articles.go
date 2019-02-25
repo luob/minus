@@ -1,38 +1,34 @@
-package main
+package generator
 
 import (
-	"errors"
 	"log"
 	"regexp"
 	"time"
 )
 
+// articles is
+type articles map[string]Article
+
 // Article is
 type Article struct {
+	*fileInfo
 	Title      string
 	Date       time.Time
 	Categories []string
 }
-
-// func newArticle(title, string, date time.Time, categories []string]) {
-
-// }
-
-// articles is
-type articles map[string]Article
 
 var dateReg = regexp.MustCompile(`^\d{4}-\d{1,2}-\d{1,2}`)
 
 func (a articles) add(fileInfo *fileInfo, categories []string) {
 	dateString := dateReg.FindString(fileInfo.Name())
 	if dateString == "" {
-		log.Println("%s is not an irregular article file", fileInfo.absFileName)
+		log.Printf("%s is not an irregular article file", fileInfo.absFileName())
 		return
 	}
 
 	date, err := time.Parse("2006-02-01", dateString)
 	if err != nil {
-		log.Println("%s is not an irregular article file", fileInfo.absFileName)
+		log.Printf("%s is not an irregular article file", fileInfo.absFileName())
 		return
 	}
 
@@ -42,27 +38,15 @@ func (a articles) add(fileInfo *fileInfo, categories []string) {
 		Title:      title,
 		Date:       date,
 		Categories: categories,
+		fileInfo:   fileInfo,
 	}
 
 }
 
-func newArticle(fileInfo *fileInfo, categories []string) (*Article, error) {
+func (a *Article) absFileName() string {
+	return a.fileInfo.absFileName()
+}
 
-	dateString := dateReg.FindString(fileInfo.name())
-	if dateString == "" {
-		return nil, errors.New("irregular article file name ")
-	}
-
-	date, err := time.Parse("2006-02-01", dateString)
-	if err != nil {
-		return nil, errors.New("irregular article file name")
-	}
-
-	title := fileInfo.nameWithoutExt()
-
-	return &Article{
-		Title:      title,
-		Date:       date,
-		Categories: categories,
-	}, nil
+func (a *Article) targetFileName() string {
+	return ""
 }

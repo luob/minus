@@ -1,4 +1,4 @@
-package main
+package generator
 
 import (
 	"io/ioutil"
@@ -15,8 +15,8 @@ type Generator struct {
 	articles  articles
 }
 
-// NewGenerator is
-func NewGenerator(workDir string) *Generator {
+// New is
+func New(workDir string) *Generator {
 	targetDir := path.Join(workDir, "target")
 	return &Generator{
 		workDir:   workDir,
@@ -69,9 +69,9 @@ func (g *Generator) prepareTargetDir() {
 }
 
 func (g *Generator) generateArticles() {
-	// for _, article := range g.articles {
-
-	// }
+	for _, article := range g.articles {
+		// newArticletask(article.)
+	}
 }
 
 func (g *Generator) generateIndex() {

@@ -5,6 +5,8 @@ import (
 	"os"
 	"path"
 	"runtime"
+
+	"github.com/luob/minus/generator"
 )
 
 func main() {
@@ -25,5 +27,6 @@ func main() {
 		}
 	}
 
-	NewGenerator(workDir).Generate()
+	generator.New(workDir).Generate()
+
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"html/template"
 	"log"
 	"os"
 	"time"
@@ -10,34 +9,34 @@ import (
 type task struct {
 	fileName       string
 	targetFileName string
-	tpl            *template.Template
+	template       *template
 	data           interface{}
 }
 
-func newtask(fileName, targetFileName string, tpl *template.Template, data interface{}) *task {
+func newtask(fileName, targetFileName string, template *template, data interface{}) *task {
 	return &task{
 		fileName:       fileName,
 		targetFileName: targetFileName,
-		tpl:            tpl,
+		template:       template,
 		data:           data,
 	}
 }
 
-func newArticletask(fileName, targetFileName string, tpl *template.Template) *task {
+func newArticletask(fileName, targetFileName string, tpl *template) *task {
 	return newtask(fileName, targetFileName, tpl, &struct {
 		Title string
 		Date  *time.Time
 	}{
 		Title: fileName,
-		Date:  fileName,
+		// Date:  fileName,
 	})
 }
 
-func (p *task) generate() {
+func (p *task) run() {
 	targetFile, err := os.Create(p.targetFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.tpl.Execute(targetFile, p.data)
+	p.template.Execute(targetFile, p.data)
 	defer targetFile.Close()
 }

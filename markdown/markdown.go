@@ -1,13 +1,12 @@
 package markdown
 
 import (
-	"html/template"
 	"regexp"
 )
 
 // Processor is das
 type Processor interface {
-	Markdown(string) template.HTML
+	Markdown(string) string
 }
 
 // DefaultProcessor is
@@ -16,7 +15,7 @@ type DefaultProcessor struct{}
 var _ Processor = &DefaultProcessor{}
 
 // Markdown is
-func (p *DefaultProcessor) Markdown(input string) template.HTML {
+func (p *DefaultProcessor) Markdown(input string) string {
 	return markdownToHTML(input)
 }
 
@@ -26,12 +25,12 @@ var (
 )
 
 // MarkdownToHTML is
-func markdownToHTML(input string) template.HTML {
+func markdownToHTML(input string) string {
 	s := ""
 	for _, block := range splitRegexp.Split(input, -1) {
 		s += parseBlock(block)
 	}
-	return template.HTML(s)
+	return s
 }
 
 func parseBlock(input string) string {

@@ -5,8 +5,7 @@ import (
 	"os"
 	"path"
 	"runtime"
-
-	"github.com/luob/minus/generator"
+	"text/template"
 )
 
 func main() {
@@ -27,6 +26,24 @@ func main() {
 		}
 	}
 
-	generator.New(workDir).Generate()
+	// load template
+	tplPattern := path.Join(workDir, "template", "*")
+	tpl, err := template.ParseGlob(tplPattern)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// refresh target dir
+	targetDir := path.Join(workDir, "target")
+	err = os.RemoveAll(targetDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = os.Mkdir(targetDir, os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	New(workDir, targetDir, Parser)
 
 }

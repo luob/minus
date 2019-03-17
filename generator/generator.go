@@ -30,7 +30,7 @@ func New(workDir string) *Generator {
 func (g *Generator) Generate() {
 	g.loadFiles(make([]string, 0))
 	g.prepareTargetDir()
-	g.generateArticles()
+	// g.generateArticles()
 	g.generateIndex()
 }
 
@@ -68,11 +68,11 @@ func (g *Generator) prepareTargetDir() {
 	}
 }
 
-func (g *Generator) generateArticles() {
-	for _, article := range g.articles {
-		// newArticletask(article.)
-	}
-}
+// func (g *Generator) generateArticles() {
+// 	for _, article := range g.articles {
+// 		// newArticletask(article.)
+// 	}
+// }
 
 func (g *Generator) generateIndex() {
 

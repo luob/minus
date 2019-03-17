@@ -3,7 +3,6 @@ package generator
 import (
 	"log"
 	"os"
-	"time"
 )
 
 type task struct {
@@ -22,16 +21,16 @@ func newtask(fileName, targetFileName string, template *template, data interface
 	}
 }
 
-func newArticletask(article *Article, tpl *template) *task {
-	// fileName := article.
-	return newtask(fileName, targetFileName, tpl, &struct {
-		Title string
-		Date  *time.Time
-	}{
-		Title: fileName,
-		// Date:  fileName,
-	})
-}
+// func newArticletask(article *Article, tpl *template) *task {
+// 	// fileName := article.
+// 	return newtask(fileName, targetFileName, tpl, &struct {
+// 		Title string
+// 		Date  *time.Time
+// 	}{
+// 		Title: fileName,
+// 		// Date:  fileName,
+// 	})
+// }
 
 func (p *task) run() {
 	targetFile, err := os.Create(p.targetFileName)
